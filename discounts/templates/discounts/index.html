@@ -1,0 +1,173 @@
+{% extends 'homepage/base.html' %}
+{% load static %}
+
+{% block title %}Акции{% endblock %}
+
+{% block content %}
+
+<style>
+
+    .discount-image {
+        width: 220px;
+        height: 350px;
+        overflow: hidden;
+        border-radius: 8px;
+        flex-shrink: 0;
+    }
+
+
+    .discount-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+    
+    .discount-image:hover img {
+        transform: scale(1.05);
+    }
+    
+    .promo-section {
+        margin: 40px 0;
+    }
+    
+    .promo-section h2 {
+        color: #333;
+        font-weight: 600;
+        margin-bottom: 30px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #f0f0f0;
+    }
+
+    .promo-item {
+        width: 260px;
+    }
+    
+    .promo-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #333;
+        line-height: 1.3;
+    }
+    
+    .promo-description {
+        color: #666;
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
+    
+    .no-promotions {
+        text-align: center;
+        padding: 60px 20px;
+        background: #f8f9fa;
+        border-radius: 12px;
+        border: 2px dashed #dee2e6;
+    }
+    
+    .no-promotions i {
+        font-size: 64px;
+        color: #adb5bd;
+        margin-bottom: 20px;
+    }
+    
+    .no-promotions p {
+        color: #6c757d;
+        font-size: 1.1rem;
+        margin-bottom: 10px;
+    }
+    
+    .no-promotions .lead {
+        font-size: 1.25rem;
+        font-weight: 500;
+        color: #495057;
+    }
+    
+    /* Адаптивность */
+    @media (max-width: 768px) {
+        .promo-section h2 {
+            font-size: 1.75rem;
+        }
+        
+    }
+    
+    @media (max-width: 576px) {
+        .promo-section {
+            margin: 30px 0;
+        }
+        
+        .promo-section h2 {
+            font-size: 1.5rem;
+            text-align: center;
+        }
+
+        .promo-item {
+            width: 340px;
+        }
+
+        .discount-image {
+            width: 260px;
+        }
+        
+        
+        .promo-title {
+            font-size: 1rem;
+        }
+    }
+</style>
+
+<div class="container">
+    <!-- Секция акций в новом формате -->
+    <div class="promo-section">
+        <h2 class="text-center mb-4">Акции и специальные предложения</h2>
+        
+        {% if discounts %}
+            <div class="row">
+    {% for discount in discounts %}
+    <div class="col-lg-3 col-md-6 col-sm-6 col-12 mb-4 d-flex justify-content-center">
+
+        <div class="promo-item text-center">
+            <a href="{% if discount.category.slug %}/goods/{{ discount.category.slug }}/{% else %}#{% endif %}"
+               class="text-decoration-none text-dark">
+
+                <div class="discount-image">
+                    {% if discount.image %}
+                        <img src="{{ discount.image.url }}" alt="{{ discount.name }}">
+                    {% else %}
+                        <div class="bg-light h-100 d-flex align-items-center justify-content-center">
+                            <i class="bi bi-percent" style="font-size: 48px; color: #adb5bd;"></i>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="promo-content mt-3">
+                    <h3 class="promo-title">{{ discount.name }}</h3>
+
+                    {% if discount.description %}
+                        <p class="promo-description">
+                            {{ discount.description|truncatechars:120 }}
+                        </p>
+                    {% endif %}
+                </div>
+            </a>
+        </div>
+
+    </div>
+    {% endfor %}
+</div>
+
+            
+        {% else %}
+            <div class="no-promotions">
+                <i class="bi bi-tag"></i>
+                <p class="lead">Акций пока нет</p>
+                <p>Скоро появятся новые специальные предложения!</p>
+                <a href="{% url 'homepage:home' %}" class="btn btn-primary mt-3">
+                    <i class="bi bi-arrow-left me-2"></i> Вернуться на главную
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

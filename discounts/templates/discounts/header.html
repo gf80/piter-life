@@ -1,0 +1,163 @@
+{% load static %}
+
+<!-- Header Section -->
+<header class="header-section py-3">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center flex-wrap py-3">
+            <!-- Лого + Название -->
+            <div class="d-flex align-items-center">
+                <a href="/" class="d-flex align-items-center text-decoration-none">
+                    <img src="{% static 'homepage/img/logo.png' %}" 
+                        alt="Piter-Life" 
+                        style="height: 70px; width: 70px; border-radius: 50%; margin-right: 15px;">
+                    <div>
+                        <div class="fw-bold fs-4 text-dark">PITER-LIFE</div>
+                        <div class="company-slogan small">Лучшие вечеринки в городе!</div>
+                    </div>
+                </a>
+            </div>
+            
+            <!-- Контакты / Меню -->
+            <div class="d-flex align-items-center">
+                <div class="d-none d-lg-block">
+                    <!-- Контейнер для всех контактов в одну линию -->
+                    <div class="d-flex align-items-center gap-4">
+                        <!-- Адрес -->
+                        <div class="d-flex align-items-center">
+                            <div class="contact-icon me-2">
+                                <i class="bi bi-geo-alt-fill"></i>
+                            </div>
+                            <div class="text-start">
+                                <div class="small text-muted mb-1">Ессентуки</div>
+                                <div class="fw-medium">Никольская ул., 28</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Телефон -->
+                        <div class="d-flex align-items-center">
+                            <div class="contact-icon me-2">
+                                <i class="bi bi-telephone-fill"></i>
+                            </div>
+                            <div class="text-start">
+                                <div class="small text-muted mb-1">Телефон</div>
+                                <a href="tel:+79187589991" class="fw-bold text-decoration-none contact-value d-block">
+                                    +7 (918) 758-99-91
+                                </a>
+                                <div class="small text-muted mt-1">18:00–03:00</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Кнопка меню для мобильных -->
+                <button class="btn d-lg-none ms-3" data-bs-toggle="collapse" data-bs-target="#mobileContacts">
+                    <i class="bi bi-list fs-4"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Мобильные контакты (раскрывающийся блок) -->
+        <div class="collapse d-lg-none" id="mobileContacts">
+            <div class="card border-0 shadow-sm mt-3">
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Адрес в мобильной версии -->
+                        <div class="col-12 mb-3">
+                            <div class="d-flex align-items-center">
+                                <div class="contact-icon me-3">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M12 2C8.13 2 5 5.13 5 9C5 13.17 9.42 18.92 11.24 21.11C11.64 21.59 12.37 21.59 12.77 21.11C14.58 18.92 19 13.17 19 9C19 5.13 15.87 2 12 2ZM12 11.5C10.62 11.5 9.5 10.38 9.5 9C9.5 7.62 10.62 6.5 12 6.5C13.38 6.5 14.5 7.62 14.5 9C14.5 10.38 13.38 11.5 12 11.5Z" fill="#FF5400"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div style="color: #a2a2a2; font-size: 12px;">Адрес</div>
+                                    <div style="color: #000000; font-weight: 500;">г. Ессентуки, Никольская улица, 28</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Телефон в мобильной версии -->
+                        <div class="col-12 mb-3">
+                            <div class="d-flex align-items-center">
+                                <div class="contact-icon me-3">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M6.62 10.79C8.06 13.62 10.38 15.94 13.21 17.38L15.41 15.18C15.68 14.91 16.08 14.82 16.43 14.94C17.55 15.31 18.76 15.51 20 15.51C20.55 15.51 21 15.96 21 16.51V20C21 20.55 20.55 21 20 21C10.61 21 3 13.39 3 4C3 3.45 3.45 3 4 3H7.5C8.05 3 8.5 3.45 8.5 4C8.5 5.25 8.7 6.45 9.07 7.57C9.18 7.92 9.1 8.31 8.82 8.59L6.62 10.79Z" fill="#FF5400"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div style="color: #a2a2a2; font-size: 12px;">Основной телефон</div>
+                                    <a href="tel:+78121234567" style="color: #000000; font-weight: 600; font-size: 18px; text-decoration: none;">+7 (918) 758-99-91</a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Время работы -->
+                        <div class="col-12 mt-3 pt-3 border-top">
+                            <div class="d-flex align-items-center">
+                                <div class="contact-icon me-3">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M11.99 2C6.47 2 2 6.48 2 12C2 17.52 6.47 22 11.99 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 11.99 2ZM12 20C7.58 20 4 16.42 4 12C4 7.58 7.58 4 12 4C16.42 4 20 7.58 20 12C20 16.42 16.42 20 12 20ZM12.5 7H11V13L16.25 16.15L17 14.92L12.5 12.25V7Z" fill="#FF5400"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div style="color: #a2a2a2; font-size: 12px;">Время работы</div>
+                                    <div style="color: #000000; font-weight: 500;">Ежедневно с 18:00–03:00</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Навигационное меню (если нужно) -->
+<style>
+    
+</style>
+
+<div class="ultra-simple-menu overflow-auto">
+    <div class="container">
+        {% for category in categories %}
+            <a href="{% url 'goods:category' category.slug %}" 
+            class="simple-btn {% if active_category == category.slug %}active{% endif %}">
+                {{ category.name }}
+            </a>
+        {% endfor %}
+        
+    </div>
+</div>
+
+<!-- Стили для header -->
+<style>
+    
+    
+</style>
+
+<!-- JavaScript для sticky header и взаимодействий -->
+<script>
+    // Sticky header при скролле
+    window.addEventListener('scroll', function() {
+        const header = document.querySelector('.ultra-simple-menu');
+        if (window.scrollY > 150) {
+            header.classList.add('sticky');
+            document.body.style.paddingTop = header.offsetHeight + 'px';
+        } else {
+            header.classList.remove('sticky');
+            document.body.style.paddingTop = 0;
+        }
+    });
+    
+    // Анимация иконок при наведении
+    document.querySelectorAll('.contact-icon').forEach(icon => {
+        icon.addEventListener('mouseenter', function() {
+            this.style.transform = 'scale(1.1)';
+            this.style.transition = 'transform 0.3s';
+        });
+        
+        icon.addEventListener('mouseleave', function() {
+            this.style.transform = 'scale(1)';
+        });
+    });
+</script>

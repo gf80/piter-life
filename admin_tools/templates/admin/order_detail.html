@@ -1,0 +1,541 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+    /* Основные стили страницы для темной темы */
+    body {
+        background: #121212;
+        color: #ffffff;
+    }
+    
+    /* Заголовок */
+    .order-header {
+        background: #212121;
+        border-radius: 12px;
+        padding: 25px 30px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        border-left: 5px solid #4a6fa5;
+    }
+    
+    .order-header h1 {
+        margin: 0;
+        color: #ffffff;
+        font-size: 28px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .order-header h1 i {
+        color: #4a6fa5;
+        font-size: 32px;
+    }
+    
+    .order-status {
+        display: inline-block;
+        padding: 8px 20px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 14px;
+        margin-left: 20px;
+        vertical-align: middle;
+    }
+    
+    .order-status.done {
+        background: rgba(40, 167, 69, 0.2);
+        color: #28a745;
+        border: 1px solid rgba(40, 167, 69, 0.3);
+    }
+    
+    .order-status.pending {
+        background: rgba(255, 193, 7, 0.2);
+        color: #ffc107;
+        border: 1px solid rgba(255, 193, 7, 0.3);
+    }
+    
+    /* Карточки с информацией */
+    .info-card {
+        background: #212121;
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        border-top: 4px solid #4a6fa5;
+    }
+    
+    .info-card h2 {
+        color: #ffffff;
+        font-size: 20px;
+        margin-top: 0;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #333333;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .info-card h2 i {
+        color: #4a6fa5;
+    }
+    
+    /* Таблица основной информации */
+    .info-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 15px;
+    }
+    
+    .info-table tr {
+        border-bottom: 1px solid #333333;
+    }
+    
+    .info-table tr:last-child {
+        border-bottom: none;
+    }
+    
+    .info-table th {
+        width: 200px;
+        padding: 15px 20px;
+        text-align: left;
+        color: #b0b0b0;
+        font-weight: 600;
+        background: #1a1a1a;
+        border-right: 1px solid #333333;
+    }
+    
+    .info-table td {
+        padding: 15px 20px;
+        color: #ffffff;
+        font-weight: 500;
+        background: #212121;
+    }
+    
+    .info-table .highlight {
+        color: #4a6fa5;
+        font-weight: 600;
+    }
+    
+    /* Таблица товаров */
+    .items-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    .items-table thead {
+        background: #2c3e50;
+        color: #ffffff;
+    }
+    
+    .items-table th {
+        padding: 18px 20px;
+        text-align: left;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 14px;
+        letter-spacing: 0.5px;
+        border-bottom: 2px solid #4a6fa5;
+    }
+    
+    .items-table tbody tr {
+        border-bottom: 1px solid #333333;
+        transition: background-color 0.2s;
+    }
+    
+    .items-table tbody tr:hover {
+        background-color: #2a2a2a;
+    }
+    
+    .items-table tbody tr:nth-child(even) {
+        background-color: #1e1e1e;
+    }
+    
+    .items-table tbody tr:nth-child(even):hover {
+        background-color: #2a2a2a;
+    }
+    
+    .items-table td {
+        padding: 16px 20px;
+        color: #e0e0e0;
+        vertical-align: middle;
+    }
+    
+    .item-name {
+        font-weight: 500;
+        color: #ffffff;
+    }
+    
+    .item-quantity {
+        display: inline-block;
+        padding: 5px 12px;
+        background: #333333;
+        border-radius: 15px;
+        font-weight: 600;
+        text-align: center;
+        min-width: 40px;
+        color: #ffffff;
+    }
+    
+    .item-price {
+        color: #b0b0b0;
+        font-weight: 500;
+    }
+    
+    .item-total {
+        color: #28a745;
+        font-weight: 700;
+        font-size: 16px;
+    }
+    
+    /* Итоговая сумма */
+    .total-row {
+        background: #2c3e50 !important;
+        border-top: 2px solid #4a6fa5 !important;
+    }
+    
+    .total-label {
+        text-align: right;
+        font-weight: 700;
+        color: #ffffff;
+        padding-right: 20px !important;
+    }
+    
+    .total-amount {
+        font-size: 18px;
+        color: #28a745;
+        font-weight: 800;
+    }
+    
+    /* Бейджи */
+    .delivery-badge {
+        display: inline-block;
+        padding: 6px 15px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .delivery-badge.pickup {
+        background: rgba(25, 118, 210, 0.2);
+        color: #64b5f6;
+        border: 1px solid rgba(25, 118, 210, 0.3);
+    }
+    
+    .delivery-badge.delivery {
+        background: rgba(46, 125, 50, 0.2);
+        color: #81c784;
+        border: 1px solid rgba(46, 125, 50, 0.3);
+    }
+    
+    /* Кнопки */
+    .action-buttons {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+        padding-top: 25px;
+        border-top: 1px solid #333333;
+    }
+    
+    .btn-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 25px;
+        background: #424242;
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 15px;
+        transition: all 0.3s;
+        border: none;
+        cursor: pointer;
+    }
+    
+    .btn-back:hover {
+        background: #555555;
+        color: white;
+        text-decoration: none;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(66, 66, 66, 0.4);
+    }
+    
+    .btn-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 25px;
+        background: {% if order.is_done %}#dc3545{% else %}#28a745{% endif %};
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 15px;
+        transition: all 0.3s;
+        border: none;
+        cursor: pointer;
+    }
+    
+    .btn-status:hover {
+        background: {% if order.is_done %}#c82333{% else %}#218838{% endif %};
+        color: white;
+        text-decoration: none;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba({% if order.is_done %}220, 53, 69{% else %}40, 167, 69{% endif %}, 0.4);
+    }
+    
+    /* Текст в подзаголовке */
+    .order-header p {
+        color: #b0b0b0;
+        margin: 10px 0 0 0;
+        font-size: 15px;
+    }
+    
+    .order-header strong {
+        color: #ffffff;
+    }
+    
+    /* Комментарий */
+    .info-table td[style*="background: #f8f9fa"] {
+        background: #2a2a2a !important;
+        color: #e0e0e0 !important;
+    }
+    
+    /* Пустые строки в таблице */
+    .items-table tbody tr td[colspan] {
+        color: #b0b0b0;
+        text-align: center;
+    }
+    
+    /* Адаптивность */
+    @media (max-width: 768px) {
+        .order-header {
+            padding: 20px;
+        }
+        
+        .order-header h1 {
+            font-size: 24px;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .order-status {
+            margin-left: 0;
+        }
+        
+        .info-table th,
+        .info-table td {
+            padding: 12px 15px;
+            font-size: 14px;
+        }
+        
+        .info-table th {
+            width: 150px;
+            background: #1a1a1a;
+        }
+        
+        .info-table td {
+            background: #212121;
+        }
+        
+        .items-table th,
+        .items-table td {
+            padding: 12px 15px;
+            font-size: 14px;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+        }
+    }
+    
+    /* Скроллбар для темной темы */
+    ::-webkit-scrollbar {
+        width: 10px;
+        background: #1a1a1a;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        background: #424242;
+        border-radius: 5px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+        background: #555555;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+{% include 'admin/headers.html' %}
+
+<div style="padding: 20px; max-width: 1200px; margin: 0 auto;">
+    <!-- Заголовок -->
+    <div class="order-header">
+        <h1>
+            <i class="bi bi-receipt"></i>
+            Детали заказа
+            <span class="order-status {% if order.is_done %}done{% else %}pending{% endif %}">
+                {% if order.is_done %}
+                    ✅ Выполнен
+                {% else %}
+                    ⏳ В работе
+                {% endif %}
+            </span>
+        </h1>
+        <p style="color: #6c757d; margin: 10px 0 0 0; font-size: 15px;">
+            Номер заказа: <strong>#{{ order.id }}</strong> • Дата создания: {{ order.created_at|date:"d.m.Y H:i" }}
+        </p>
+    </div>
+    
+    <!-- Основная информация -->
+    <div class="info-card">
+        <h2><i class="bi bi-info-circle"></i> Информация о заказе</h2>
+        <table class="info-table">
+            <tr>
+                <th>Телефон клиента</th>
+                <td class="highlight">
+                    <i class="bi bi-telephone me-2"></i>{{ order.phone_number }}
+                </td>
+            </tr>
+            <tr>
+                <th>Адрес</th>
+                <td>
+                    {% if order.address %}
+                        <i class="bi bi-geo-alt me-2"></i>{{ order.address }}
+                    {% else %}
+                        <span style="color: #6c757d;">—</span>
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <th>Способ получения</th>
+                <td>
+                    <span class="delivery-badge {{ order.delivery_type }}">
+                        {% if order.delivery_type == 'delivery' %}
+                            <i class="bi bi-truck me-1"></i> Доставка
+                        {% else %}
+                            <i class="bi bi-shop me-1"></i> Самовывоз
+                        {% endif %}
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <th>Дата и время</th>
+                <td>
+                    <i class="bi bi-calendar3 me-2"></i>{{ order.created_at|date:"d.m.Y" }}
+                    <i class="bi bi-clock ms-3 me-2"></i>{{ order.created_at|time:"H:i" }}
+                </td>
+            </tr>
+            <tr>
+                <th>Общая сумма</th>
+                <td style="color: #27ae60; font-size: 18px; font-weight: 700;">
+                    {{ order.total_price }} ₽
+                </td>
+            </tr>
+            {% if order.comment %}
+            <tr>
+                <th>Комментарий</th>
+                <td style="background: #f8f9fa; border-radius: 6px; padding: 15px;">
+                    <i class="bi bi-chat-left-text me-2"></i>{{ order.comment }}
+                </td>
+            </tr>
+            {% endif %}
+        </table>
+    </div>
+    
+    <!-- Товары в заказе -->
+    <div class="info-card">
+        <h2><i class="bi bi-cart"></i> Состав заказа</h2>
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th>Товар</th>
+                    <th width="100">Количество</th>
+                    <th width="120">Цена за шт.</th>
+                    <th width="120">Сумма</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in order.items.all %}
+                <tr>
+                    <td class="item-name">
+                        {% if item.product %}
+                            {{ item.product.name }}
+                        {% else %}
+                            {{ item.product_name|default:"Товар" }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="item-quantity">{{ item.quantity }} шт.</span>
+                    </td>
+                    <td class="item-price">{{ item.price }} ₽</td>
+                    <td class="item-total">{{ item.total_price }} ₽</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" style="text-align: center; padding: 30px; color: #6c757d;">
+                        <i class="bi bi-exclamation-circle me-2"></i>Нет товаров в заказе
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr class="total-row">
+                    <td colspan="3" class="total-label">Общая сумма заказа:</td>
+                    <td class="total-amount">{{ order.total_price }} ₽</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+    
+    <!-- Кнопки действий -->
+    <div class="action-buttons">
+        <a href="{% url 'admin:orders' %}" class="btn-back">
+            <i class="bi bi-arrow-left"></i> Назад к списку заказов
+        </a>
+        
+        <form method="post" action="{% url 'admin:toggle_order' %}" style="margin: 0;">
+            {% csrf_token %}
+            <input type="hidden" name="id" value="{{ order.id }}">
+            <input type="hidden" name="is_done" value="{% if order.is_done %}false{% else %}true{% endif %}">
+            <button type="submit" class="btn-status">
+                {% if order.is_done %}
+                    <i class="bi bi-x-circle"></i> Вернуть в работу
+                {% else %}
+                    <i class="bi bi-check-circle"></i> Отметить выполненным
+                {% endif %}
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+// Подтверждение изменения статуса
+document.querySelector('.btn-status').addEventListener('click', function(e) {
+    const action = this.querySelector('i').className.includes('check-circle') ? 'выполненным' : 'в работу';
+    if (!confirm(`Вы уверены, что хотите пометить заказ как ${action}?`)) {
+        e.preventDefault();
+    }
+});
+
+// Добавляем иконку загрузки при отправке формы
+document.querySelector('form').addEventListener('submit', function() {
+    const btn = this.querySelector('.btn-status');
+    btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Обработка...';
+    btn.disabled = true;
+});
+</script>
+{% endblock %}

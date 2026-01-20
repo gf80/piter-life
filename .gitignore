@@ -1,0 +1,5 @@
+.venv/
+info.json
+db.sqlite3
+__pycache__/
+Изображения

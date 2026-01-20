@@ -1,0 +1,364 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+    /* Основные стили */
+    h1 {
+        color: #ffffff;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #f0f0f0;
+    }
+    
+    /* Таблица */
+    .orders-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        font-size: 15px;
+        box-shadow: 0 4px 12px rgba(165, 154, 154, 0.08);
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    
+    .orders-table thead {
+        background: #4a6fa5;
+        color: white;
+    }
+    
+    .orders-table th {
+        padding: 18px 15px;
+        text-align: left;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 14px;
+        letter-spacing: 0.5px;
+    }
+    
+    .orders-table tbody tr {
+        border-bottom: 1px solid #212121;
+        transition: background-color 0.2s;
+    }
+    
+    .orders-table tbody tr:hover {
+        background-color: #313131;
+    }
+    
+    .orders-table td {
+        padding: 16px 15px;
+        color: white;
+        vertical-align: middle;
+    }
+    
+    /* Цвета для строк */
+    .orders-table tbody tr:nth-child(even) {
+        background-color: #1a1a1a;
+    }
+    
+    /* Стили для ячеек */
+    .order-id {
+        font-weight: 700;
+        color: #2c3e50;
+        font-size: 15px;
+    }
+    
+    .phone-cell {
+        font-weight: 600;
+        color: #2c5282;
+    }
+    
+    .delivery-type {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+    
+    .delivery-type.pickup {
+        background: #e3f2fd;
+        color: #1976d2;
+    }
+    
+    .delivery-type.delivery {
+        background: #e8f5e9;
+        color: #2e7d32;
+    }
+    
+    .quantity-cell {
+        font-weight: 700;
+        color: #2d3748;
+        text-align: center;
+    }
+    
+    .price-cell {
+        font-weight: 700;
+        color: #27ae60;
+        font-size: 16px;
+    }
+    
+    .date-cell {
+        color: #666;
+        font-size: 14px;
+    }
+    
+    /* Чекбокс */
+    .status-checkbox {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+        border-radius: 4px;
+        border: 2px solid #ccc;
+        transition: all 0.2s;
+    }
+    
+    .status-checkbox:checked {
+        background: #27ae60;
+        border-color: #27ae60;
+    }
+    
+    /* Строка с товарами */
+    .order-items-row {
+        background-color: #f8f9fa !important;
+    }
+    
+    .order-items-row table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 10px 0;
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    
+    .order-items-row th {
+        background: #6c757d;
+        color: white;
+        padding: 12px;
+        font-size: 13px;
+        text-transform: uppercase;
+    }
+    
+    .order-items-row td {
+        padding: 10px 12px;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .order-items-row tr:last-child td {
+        border-bottom: none;
+    }
+    
+    /* Кнопка обновления */
+    .refresh-btn {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: #4a6fa5;
+        color: white;
+        border: none;
+        font-size: 20px;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(74, 111, 165, 0.3);
+        transition: all 0.3s;
+        z-index: 1000;
+    }
+    
+    .refresh-btn:hover {
+        background: #3a5a8a;
+        transform: rotate(90deg);
+    }
+    
+    /* Счетчик заказов */
+    .orders-count {
+        background: #f8f9fa;
+        padding: 10px 20px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        display: inline-block;
+        font-weight: 600;
+        color: #555;
+    }
+    
+    /* Загрузка */
+    .loading {
+        text-align: center;
+        padding: 40px;
+        color: #777;
+    }
+    
+    .loading i {
+        font-size: 40px;
+        margin-bottom: 15px;
+        color: #4a6fa5;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+{% include 'admin/headers.html' %}
+
+<div style="padding: 20px;">
+    <h1>
+        <i class="bi bi-cart-check" style="margin-right: 10px;"></i>
+        Список заказов
+        <span class="orders-count" id="orders-count">Загрузка...</span>
+    </h1>
+    
+    <!-- Таблица заказов -->
+    <table class="orders-table" id="orders-table">
+        <thead>
+            <tr>
+                <th width="80">ID</th>
+                <th width="140">Телефон</th>
+                <th width="200">Адрес</th>
+                <th width="120">Способ</th>
+                <th width="100">Товары</th>
+                <th width="120">Сумма</th>
+                <th width="150">Дата</th>
+                <th width="100">Выполнен</th>
+            </tr>
+        </thead>
+        <tbody id="orders-tbody" class="text-white">
+            <tr id="loading-row">
+                <td colspan="8" class="loading">
+                    <i class="bi bi-hourglass-split"></i>
+                    <p>Загрузка заказов...</p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <!-- Кнопка обновления -->
+    <button class="refresh-btn" onclick="loadOrders()" title="Обновить заказы">
+        <i class="bi bi-arrow-clockwise"></i>
+    </button>
+</div>
+
+<script>
+const csrfToken = "{{ csrf_token }}";
+
+// Загрузка заказов
+async function loadOrders() {
+    const tbody = document.querySelector("#orders-table tbody");
+    const loadingRow = document.getElementById('loading-row');
+    
+    if (loadingRow) {
+        loadingRow.innerHTML = '<td colspan="8" class="loading"><i class="bi bi-hourglass-split"></i><p>Загрузка заказов...</p></td>';
+    }
+    
+    try {
+        const res = await fetch("{% url 'admin:orders_data' %}");
+        const data = await res.json();
+        
+        tbody.innerHTML = "";
+        
+        if (!data.orders || data.orders.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="8" class="loading">
+                        <i class="bi bi-inbox"></i>
+                        <p>Заказов пока нет</p>
+                    </td>
+                </tr>
+            `;
+            document.getElementById('orders-count').textContent = '0 заказов';
+            return;
+        }
+        
+        // Обновляем счетчик
+        document.getElementById('orders-count').textContent = `${data.orders.length} заказов`;
+        
+        // Добавляем заказы в таблицу
+        data.orders.forEach(order => {
+            const row = document.createElement("tr");
+            row.dataset.orderId = order.id;
+            
+            row.innerHTML = `
+                <td class="order-id">#${order.id}</td>
+                <td class="phone-cell">
+                    <i class="bi bi-telephone me-1"></i>${order.phone_number}
+                </td>
+                <td title="${order.address || 'Нет адреса'}">
+                    ${order.address ? order.address.substring(0, 30) + (order.address.length > 30 ? '...' : '') : '—'}
+                </td>
+                <td>
+                    <span class="delivery-type ${order.delivery_type}">
+                        ${order.delivery_type}
+                    </span>
+                </td>
+                <td class="quantity-cell">${order.total_quantity || 0}</td>
+                <td class="price-cell">${order.total_price || '0.00'} ₽</td>
+                <td class="date-cell">
+                    <i class="bi bi-calendar me-1"></i>${order.created}
+                </td>
+                <td>
+                    <input type="checkbox" class="status-checkbox" 
+                           ${order.is_done ? "checked" : ""}
+                           onchange="toggleOrder(${order.id}, this.checked)">
+                </td>
+            `;
+            
+            // Клик по строке → показать товары
+            row.addEventListener("click", (e) => {
+                if (e.target.tagName.toLowerCase() === "input") return;
+                window.location.href = `/admin/orders/${order.id}/`;
+            });
+            
+            tbody.appendChild(row);
+        });
+        
+    } catch (error) {
+        console.error('Ошибка загрузки заказов:', error);
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="8" class="loading">
+                    <i class="bi bi-exclamation-triangle text-danger"></i>
+                    <p>Ошибка загрузки</p>
+                </td>
+            </tr>
+        `;
+    }
+}
+
+// Переключение чекбокса выполнения
+async function toggleOrder(id, isDone) {
+    try {
+        await fetch("{% url 'admin:toggle_order' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrfToken,
+            },
+            body: JSON.stringify({ id: id, is_done: isDone }),
+        });
+        
+        // Визуальная обратная связь
+        const checkbox = document.querySelector(`tr[data-order-id="${id}"] input[type="checkbox"]`);
+        if (checkbox) {
+            checkbox.checked = isDone;
+        }
+        
+    } catch (error) {
+        console.error('Ошибка обновления статуса:', error);
+        alert('Ошибка обновления статуса');
+    }
+}
+
+// Показать/скрыть товары заказа
+async function toggleItemsRow(row) {
+    // Проверяем, есть ли уже раскрытая строка
+    return;
+}
+
+// Автоматическое обновление каждые 30 секунд
+loadOrders();
+setInterval(loadOrders, 30000);
+</script>
+{% endblock %}

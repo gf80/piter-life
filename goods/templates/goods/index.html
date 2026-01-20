@@ -1,0 +1,367 @@
+{% extends 'goods/base.html' %}
+
+
+{% block title %}Категории{% endblock %}
+
+{% block content %}
+<style>
+    .card-img-top {
+        height: 240px; 
+        object-fit: cover;
+    }
+
+    @media (max-width: 575px) {
+        .card-img-top {
+            height: 180px;
+        }
+    }
+</style>
+
+<div class="container">
+    
+    <!-- Якорное меню (только если есть подкатегории) -->
+    {% if subcategories %}
+    <div class="mb-4">
+        <div class="ultra-simple-menu overflow-auto">
+            {% for subcategory in subcategories %}
+                <a href="#{{ subcategory.slug }}" class="subcategory-btn">
+                    {{ subcategory.name }}
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    {% include 'goods/cart.html' %}
+    
+    <!-- Заголовок категории -->
+    <h1 class="mb-4 mt-5">{{ category.name }}</h1>
+        
+        <!-- Сначала товары без подкатегории -->
+        {% if goods_without_subcategory %}
+        <div class="mb-5">
+            {% comment %}
+                <h2 class="h4 mb-3">{{ category.name }}</h2>
+            {% endcomment %}
+            <div class="row">
+                {% for product in goods_without_subcategory %}
+                    {% if product %}
+                    <div class="col-lg-3 col-md-6 col-sm-6 col-6 mb-4">
+                        <div class="product-card card h-100 border-0 shadow-sm">
+                            <!-- Картинка товара -->
+                            <div class="product-image position-relative">
+                                {% if product.image %}
+                                    <img src="{{ product.image.url }}" 
+                                        class="card-img-top" 
+                                        alt="{{ product.name }}"
+                                        >
+                                {% else %}
+                                    <div class="no-image d-flex align-items-center justify-content-center" 
+                                        style="height: 220px; background: #f8f9fa;">
+                                        <i class="bi bi-image text-muted" style="font-size: 3rem;"></i>
+                                    </div>
+                                {% endif %}
+                                
+                                <!-- Бейдж "Новинка" -->
+                                {% if product.is_new %}
+                                <div class="badge-new position-absolute top-0 end-0 m-2">
+                                    <span class="badge bg-danger px-3 py-2">
+                                        <i class="bi bi-star-fill me-1"></i> НОВИНКА
+                                    </span>
+                                </div>
+                                {% endif %}
+                                
+                                <!-- Бейдж "Рекомендуем" -->
+                                {% if product.is_featured %}
+                                <div class="badge-featured position-absolute top-0 start-0 m-2">
+                                    <span class="badge bg-warning text-dark px-3 py-2">
+                                        <i class="bi bi-heart-fill me-1"></i> РЕКОМЕНДУЕМ
+                                    </span>
+                                </div>
+                                {% endif %}
+                                
+                                <!-- Бейдж скидки -->
+                                {% if product.has_discount %}
+                                <div class="badge-discount position-absolute bottom-0 start-0 m-2">
+                                    <span class="badge bg-success px-3 py-2">
+                                        <i class="bi bi-tag-fill me-1"></i> -{{ product.discount_percent }}%
+                                    </span>
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Информация о товаре -->
+                            <div class="card-body d-flex flex-column">
+                                <!-- Название товара -->
+                                <h5 class="card-title fw-bold mb-2" style="font-size: 1.1rem;">
+                                    <a href="#" 
+                                    class="text-decoration-none text-dark">
+                                        {{ product.name }}
+                                    </a>
+                                </h5>
+                                
+                                <!-- Категория -->
+                                <div class="product-category mb-2">
+                                    <span class="badge bg-light text-dark border">
+                                        <i class="bi bi-tag me-1"></i>
+                                        {{ product.category.name }}
+                                    </span>
+                                </div>
+                                
+                                <!-- Цены -->
+                                <div class="product-price mb-3">
+                                    {% if product.has_discount %}
+                                        <div class="align-items-center">
+                                            <div class="text-muted text-decoration-line-through">
+                                                {{ product.old_price }} ₽
+                                            </div>
+                                            <div class="h4 fw-bold text-success mb-0">
+                                                {{ product.price }} ₽
+                                            </div>
+                                        </div>
+                                         <!-- <small class="text-success fw-medium">
+                                            <i class="bi bi-arrow-down"></i> Экономия {{ product.discount_percent }}%
+                                        </small> -->
+                                    {% else %}
+                                        <span class="h4 fw-bold text-dark mb-0">
+                                            {{ product.price }} ₽
+                                        </span>
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- Описание -->
+                                {% if product.describe %}
+                                <div class="product-description mb-3 flex-grow-1">
+                                    <p class="card-text text-muted small mb-0" 
+                                    style="font-size: 0.85rem; line-height: 1.4;">
+                                        {{ product.describe|truncatechars:80 }}
+                                    </p>
+                                </div>
+                                {% endif %}
+                                
+                                <!-- Характеристики -->
+                                <div class="product-specs mb-3">
+                                    {% if product.weight %}
+                                    <div class="d-flex align-items-center mb-1">
+                                        <i class="bi bi-box-seam text-muted me-2" style="font-size: 0.9rem;"></i>
+                                        <span class="small text-muted">Вес:</span>
+                                        <span class="small fw-medium ms-1">{{ product.weight }} г</span>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- Кнопка Купить -->
+                                <div class="mt-auto">
+                                    
+                                    <button class="btn btn-success w-100 py-2 fw-bold add-to-cart-btn"
+                                            data-product-id="{{ product.id }}"
+                                            data-product-name="{{ product.name }}"
+                                            data-product-price="{{ product.price }}"
+                                            data-product-image="{{ product.image.url|default:'' }}"
+                                            style="font-size: 0.8rem;">
+                                        <i class="bi bi-cart-plus me-2"></i>В КОРЗИНУ
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+                {% else %}
+                    <p class="text-muted">Товаров пока нет</p>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Если есть подкатегории -->
+        {% if subcategories %}
+
+        <!-- Товары по подкатегориям -->
+        {% for subcategory, products in goods_by_subcategory.items %}
+        <div id="{{ subcategory.slug }}" class="mb-5 pt-3">
+            <h2 class="h4 mb-3">{{ subcategory.name }}</h2>
+            
+            {% if subcategory.description %}
+                <p class="small text-muted mb-3">{{ subcategory.description }}</p>
+            {% endif %}
+            
+            {% if products %}
+                <div class="row">
+                {% for product in products %}
+                <div class="col-lg-3 col-md-4 col-sm-6 col-6 mb-4">
+                    <div class="product-card card h-100 border-0 shadow-sm">
+                        <!-- Картинка товара -->
+                        <div class="product-image position-relative">
+                            {% if product.image %}
+                                <img src="{{ product.image.url }}" 
+                                    class="card-img-top" 
+                                    alt="{{ product.name }}"
+                                    >
+                            {% else %}
+                                <div class="no-image d-flex align-items-center justify-content-center" 
+                                    style="height: 220px; background: #f8f9fa;">
+                                    <i class="bi bi-image text-muted" style="font-size: 3rem;"></i>
+                                </div>
+                            {% endif %}
+                            
+                            <!-- Бейдж "Новинка" -->
+                            {% if product.is_new %}
+                            <div class="badge-new position-absolute top-0 end-0 m-2">
+                                <span class="badge bg-danger px-3 py-2">
+                                    <i class="bi bi-star-fill me-1"></i> НОВИНКА
+                                </span>
+                            </div>
+                            {% endif %}
+                            
+                            <!-- Бейдж "Рекомендуем" -->
+                            {% if product.is_featured %}
+                            <div class="badge-featured position-absolute top-0 start-0 m-2">
+                                <span class="badge bg-warning text-dark px-3 py-2">
+                                    <i class="bi bi-heart-fill me-1"></i> РЕКОМЕНДУЕМ
+                                </span>
+                            </div>
+                            {% endif %}
+                            
+                            <!-- Бейдж скидки -->
+                            {% if product.has_discount %}
+                            <div class="badge-discount position-absolute bottom-0 start-0 m-2">
+                                <span class="badge bg-success px-3 py-2">
+                                    <i class="bi bi-tag-fill me-1"></i> -{{ product.discount_percent }}%
+                                </span>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Информация о товаре -->
+                        <div class="card-body d-flex flex-column">
+                            <!-- Название товара -->
+                            <h5 class="card-title fw-bold mb-2" style="font-size: 1.1rem;">
+                                <a href="#" 
+                                class="text-decoration-none text-dark">
+                                    {{ product.name }}
+                                </a>
+                            </h5>
+                            
+                            <!-- Категория -->
+                            <div class="product-category mb-2">
+                                {% if product.subcategory %}
+                                <span class="badge bg-light text-dark border">
+                                    <i class="bi bi-tag me-1"></i>
+                                    {{ product.subcategory.name }}
+                                </span>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Цены -->
+                            <div class="product-price mb-3">
+                                {% if product.has_discount %}
+                                    <div class="align-items-center">
+                                        <div class="text-muted text-decoration-line-through">
+                                            {{ product.old_price }} ₽
+                                        </div>
+                                        <div class="h4 fw-bold text-success mb-0">
+                                            {{ product.price }} ₽
+                                        </div>
+                                    </div>
+                                    <!-- 
+                                    <small class="text-success fw-medium">
+                                        <i class="bi bi-arrow-down"></i> Экономия {{ product.discount_percent }}%
+                                    </small> -->
+                                {% else %}
+                                    <span class="h4 fw-bold text-dark mb-0">
+                                        {{ product.price }} ₽
+                                    </span>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Описание -->
+                            {% if product.describe %}
+                            <div class="product-description mb-3 flex-grow-1">
+                                <p class="card-text text-muted small mb-0" 
+                                style="font-size: 0.85rem; line-height: 1.4;">
+                                    {{ product.describe|truncatechars:80 }}
+                                </p>
+                            </div>
+                            {% endif %}
+                            
+                            <!-- Характеристики -->
+                            <div class="product-specs mb-3">
+                                {% if product.weight %}
+                                <div class="d-flex align-items-center mb-1">
+                                    <i class="bi bi-box-seam text-muted me-2" style="font-size: 0.9rem;"></i>
+                                    <span class="small text-muted">Вес:</span>
+                                    <span class="small fw-medium ms-1">{{ product.weight }} г</span>
+                                </div>
+                                {% endif %}
+                                
+                                
+                            </div>
+                            
+                            <!-- Кнопка Купить -->
+                            <div class="mt-auto">
+                                <button class="btn btn-success w-100 py-2 fw-bold add-to-cart-btn"
+                                        data-product-id="{{ product.id }}"
+                                        data-product-name="{{ product.name }}"
+                                        data-product-price="{{ product.price }}"
+                                        data-product-image="{{ product.image.url|default:'' }}">
+                                    <i class="bi bi-cart-plus me-2"></i>В КОРЗИНУ
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+                <p class="text-muted">Товаров пока нет</p>
+            {% endif %}
+        </div>
+        {% endfor %}
+        
+    <!-- Если нет подкатегорий -->
+    {% else %}
+        <div class="row">
+            {% for good in goods %}
+            <div class="col-lg-3 col-md-4 col-sm-6 col-7 mb-4">
+                <div class="card h-100">
+                    {% if good.image %}
+                        <img src="{{ good.image.url }}" class="card-img-top" alt="{{ good.title }}">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ good.title }}</h5>
+                        <p class="card-text">{{ good.price }} ₽</p>
+                        <a href="{% url 'product_detail' good.slug %}" class="btn btn-primary">
+                            Подробнее
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            
+            {% endfor %}
+        </div>
+    {% endif %}
+    
+</div>
+
+<!-- Простой JS для плавной прокрутки -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Плавная прокрутка к якорям
+    document.querySelectorAll('.subcategory-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+            const targetElement = document.querySelector(targetId);
+            if (targetElement) {
+                window.scrollTo({
+                    top: targetElement.offsetTop - 100,
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+});
+</script>
+
+{% endblock %}

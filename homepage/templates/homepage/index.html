@@ -1,0 +1,121 @@
+{% extends 'homepage/base.html' %}
+{% load static %}
+
+{% block title %}Главная страница{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <!-- Секция акций -->
+    <div class="section">
+        <h3>Акции и спец. предложения</h3>
+        
+        {% if discounts %}
+            <div class="discounts">
+                {% for discount in discounts %}
+                    <a href="{% if discount.category.slug %}goods/{{ discount.category.slug }}{% else %}/discounts{% endif %}" 
+                    class="discount-image">
+                        {% if discount.image %}
+                            <img src="{{ discount.image.url }}" 
+                                alt="{{ discount.name }}"
+                                loading="lazy">
+                        {% else %}
+                            <div class="placeholder-image">
+                                <i class="bi bi-percent"></i>
+                            </div>
+                        {% endif %}
+                    </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-items">
+                <i class="bi bi-tag"></i>
+                <p>Акций пока нет. Скоро будут новые предложения!</p>
+            </div>
+        {% endif %}
+    </div>
+    
+    <!-- Секция категорий -->
+    <div class="section">
+        <h3>Меню г. Ессентуки</h3>
+        
+        {% if categories %}
+            <div class="row">
+                {% for category in categories %}
+                <div class="col-6 col-lg-3 col-md-6 col-sm-6 d-flex justify-content-center">
+                    <a href="{% url 'goods:category' category.slug %}" class="category-card" style="
+                        {% if forloop.counter0|divisibleby:5 %}background: linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 100%);
+                {% elif forloop.counter0|divisibleby:4 %}background: linear-gradient(135deg, #FFD166 0%, #FFE29C 100%);
+                {% elif forloop.counter0|divisibleby:3 %}background: linear-gradient(135deg, #f38a59ff 0%, #ffb554ff 100%);
+                {% elif forloop.counter0|divisibleby:2 %}background: linear-gradient(135deg, #30d606ff 0%, #68ff4aff 100%);
+                {% else %}background: linear-gradient(135deg, #B979E4 0%, #D5A6FF 100%);{% endif %}
+                ">
+                        <div class="category-content">
+                            <h4 class="category-name">{{ category.name }}</h4>
+
+                                {% if category.image %}
+                                    <img src="{{ category.image.url }}" 
+                                        alt="{{ category.name }}"
+                                        loading="lazy">
+                                {% else %}
+                                    <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #f1f3f5 0%, #e9ecef 100%); display: flex; align-items: center; justify-content: center;">
+                                        <i class="bi bi-percent" style="font-size: 48px; color: #adb5bd;"></i>
+                                    </div>
+                                {% endif %}
+                           
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="no-items">
+                <i class="bi bi-grid"></i>
+                <p>Категории пока не добавлены</p>
+            </div>
+            {% endif %}
+    </div>
+</div>
+
+<!-- Карта с местоположением ресторана -->
+<div class="container">
+    <div class="section">
+        <h3>Наш адрес</h3>
+        <div class="map-container mb-5" id="map">
+            <!-- Здесь будет встроена карта -->
+            <iframe src="https://yandex.ru/map-widget/v1/?um=constructor%3A753606ca5d2275f2431728679ef1dddd663573684b62a5465c0048c52f9e31cc&amp;source=constructor" width="100%" height="400" frameborder="0"></iframe>
+            
+            <div class="map-overlay">
+                <h4>Наш ресторан в Ессентуках</h4>
+                <p><i class="bi bi-geo-alt"></i> г. Ессентуки, Никольская улица, 28</p>
+                <p><i class="bi bi-clock"></i> Ежедневно с 18:00–03:00</p>
+                <p><i class="bi bi-telephone"></i> +7 (918) 758-99-91</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Простые анимации при наведении
+document.addEventListener('DOMContentLoaded', function() {
+    const cards = document.querySelectorAll('.discount, .category-card');
+    
+    // Анимация для десктопов
+    cards.forEach(card => {
+        // Для мобильных - тактильный фидбек
+        if (window.innerWidth <= 768) {
+            card.addEventListener('touchstart', function() {
+                this.style.transform = 'translateY(-5px)';
+            });
+            
+            card.addEventListener('touchend', function() {
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
+            });
+        }
+    });
+});
+</script>
+
+{% endblock %}  

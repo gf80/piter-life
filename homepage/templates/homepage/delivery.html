@@ -1,0 +1,231 @@
+{% extends 'homepage/base.html' %}
+{% load static %}
+
+{% block title %}Условия доставки{% endblock %}
+
+{% block content %}
+
+<style>
+    .delivery-section {
+        padding: 40px 0;
+    }
+    
+    .info-item {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .info-item:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+    
+    .info-number {
+        flex-shrink: 0;
+        margin-right: 20px;
+    }
+    
+    .info-number i {
+        font-size: 2.5rem;
+        color: #FF5400;
+    }
+    
+    .info-content h4 {
+        color: #333;
+        font-weight: 600;
+        margin-bottom: 10px;
+        font-size: 1.3rem;
+    }
+    
+    .info-content .lead {
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 0;
+    }
+    
+    .contacts-section {
+        margin: 40px 0;
+        padding: 30px;
+        background: #f8f9fa;
+        border-radius: 12px;
+    }
+    
+    .contacts-section h3 {
+        color: #333;
+        font-weight: 600;
+        margin-bottom: 30px;
+        text-align: center;
+        font-size: 1.8rem;
+    }
+    
+    .contacts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 25px;
+        margin-bottom: 30px;
+    }
+    
+    .contact-card {
+        background: white;
+        padding: 25px;
+        border-radius: 10px;
+        text-align: center;
+        box-shadow: 0 3px 15px rgba(0,0,0,0.05);
+        transition: transform 0.3s ease;
+    }
+    
+    .contact-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .contact-icon-info {
+        width: 36px;
+        height: 36px;
+        background: linear-gradient(135deg, #FF5400 0%, #ff5e00 100%);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        font-size: 1.5rem;
+    }
+    
+    .contact-title {
+        color: #333;
+        font-weight: 600;
+        margin-bottom: 10px;
+        font-size: 1.2rem;
+    }
+    
+    .contact-value-info {
+        color: #666;
+        font-size: 1.1rem;
+        margin-bottom: 0;
+    }
+    
+    .contact-value-info a {
+        color: #007bff;
+        text-decoration: none;
+    }
+    
+    .contact-value-info a:hover {
+        text-decoration: underline;
+    }
+    
+    .map-container {
+        width: 100%;
+        height: 400px;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        margin-top: 20px;
+    }
+    
+    .map-container iframe {
+        width: 100%;
+        height: 100%;
+        border: 0;
+    }
+    
+    .back-button {
+        text-align: center;
+        margin-top: 40px;
+    }
+    
+    @media (max-width: 768px) {
+        .section, .contacts-section {
+            padding: 20px;
+            margin: 30px 0;
+        }
+        
+        .section h3, .contacts-section h3 {
+            font-size: 1.5rem;
+        }
+        
+        .info-item {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .info-number {
+            margin-right: 0;
+            margin-bottom: 15px;
+        }
+        
+        .info-number i {
+            font-size: 2rem;
+        }
+        
+        .map-container {
+            height: 300px;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .contacts-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .contact-card {
+            padding: 20px;
+        }
+        
+        .map-container {
+            height: 250px;
+        }
+    }
+</style>
+
+<div class="container delivery-section">
+    
+    <!-- Условия доставки и оплаты -->
+    <div class="section">
+        <h3>Условия доставки и оплаты г. Ессентуки</h3>
+
+        <div class="info-item">
+            <div class="info-number">
+                <i class="bi bi-1-circle"></i>
+            </div>
+            <div class="info-content">
+                <h4>Условия доставки</h4>
+                <p class="lead mb-4">Доставка осуществляется бесплатно при заказе от 500 руб по городу Ессентуки. Доставка за город осуществляется платно. Подробности уточняйте у оператора.</p>
+            </div>
+        </div>
+
+        <div class="info-item">
+            <div class="info-number">
+                <i class="bi bi-2-circle"></i>
+            </div>
+            <div class="info-content">
+                <h4>Оплата</h4>
+                <p class="lead mb-4">Оплата производится при получении заказа, к оплате принимаем наличные или банковские карты.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="container">
+        <div class="section">
+            <h3>Наш адрес</h3>
+            <div class="map-container mb-5" id="map">
+                <!-- Здесь будет встроена карта -->
+                <iframe src="https://yandex.ru/map-widget/v1/?um=constructor%3A753606ca5d2275f2431728679ef1dddd663573684b62a5465c0048c52f9e31cc&amp;source=constructor" width="100%" height="400" frameborder="0"></iframe>
+                
+                <div class="map-overlay">
+                    <h4>Наш ресторан в Ессентуках</h4>
+                    <p><i class="bi bi-geo-alt"></i> г. Ессентуки, Никольская улица, 28</p>
+                    <p><i class="bi bi-clock"></i> Ежедневно с 18:00–03:00</p>
+                    <p><i class="bi bi-telephone"></i> +7 (918) 758-99-91</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,466 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+    /* Стили для печати и отображения */
+    @media screen {
+        .report-document {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 30px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            border-radius: 4px;
+        }
+        
+        .print-controls {
+            margin-bottom: 30px;
+            padding: 20px;
+            
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .btn-print {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-print:hover {
+            background: #218838;
+            transform: translateY(-1px);
+        }
+        
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: #6c757d;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        
+        .btn-back:hover {
+            background: #5a6268;
+            color: white;
+        }
+        
+        body {
+            
+            padding: 20px;
+        }
+    }
+    
+    /* Общие стили документа */
+    .document-header {
+        text-align: center;
+        margin-bottom: 40px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #333;
+    }
+    
+    .document-title {
+        font-size: 24px;
+        font-weight: 700;
+        color: #ffffff;
+        margin: 0 0 10px 0;
+    }
+    
+    .document-subtitle {
+        font-size: 16px;
+        color: #ffffff;
+        margin: 0;
+    }
+    
+    .document-meta {
+        margin-top: 15px;
+        color: #ffffff;
+        font-size: 14px;
+    }
+    
+    /* Основные статистики */
+    .summary-stats {
+        margin-bottom: 30px;
+        border-radius: 6px;
+        overflow: hidden;
+    }
+    
+    .summary-stats table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .summary-stats th {
+        padding: 15px;
+        text-align: left;
+        font-weight: 600;
+        color: #ffffff;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .summary-stats td {
+        padding: 12px 15px;
+        color: #ffffff;
+    }
+    
+    .summary-stats tr:last-child td {
+        border-bottom: none;
+    }
+    
+    .stat-value {
+        font-weight: 600;
+        color: #ffffff;
+    }
+    
+    /* Таблица заказов по дням */
+    .daily-orders {
+        margin-bottom: 30px;
+        border-radius: 6px;
+        overflow: hidden;
+    }
+    
+    .daily-orders table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .daily-orders th {
+        padding: 12px 15px;
+        text-align: left;
+        font-weight: 600;
+        color: #ffffff;
+        font-size: 13px;
+        white-space: nowrap;
+    }
+    
+    .daily-orders td {
+        padding: 10px 15px;
+        color: #ffffff;
+        font-size: 13px;
+    }
+    
+    .daily-orders tr:hover {
+    }
+    
+    .daily-orders .text-right {
+        text-align: right;
+    }
+    
+    .daily-orders .text-center {
+        text-align: center;
+    }
+    
+    /* Сводная информация */
+    .summary-info {
+        margin-top: 40px;
+        padding: 20px;
+        border-radius: 6px;
+    }
+    
+    .summary-info h3 {
+        margin-top: 0;
+        margin-bottom: 15px;
+        color: #ffffff;
+        font-size: 18px;
+    }
+    
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+    }
+    
+    .info-item {
+        margin-bottom: 10px;
+    }
+    
+    .info-label {
+        font-weight: 600;
+        color: #ffffff;
+        margin-bottom: 5px;
+        font-size: 13px;
+    }
+    
+    .info-value {
+        color: #ffffff;
+        font-size: 14px;
+    }
+    
+    /* Подпись */
+    .signature {
+        margin-top: 60px;
+        padding-top: 30px;
+    }
+    
+    .signature-line {
+        width: 300px;
+        border-top: 1px solid #333;
+        margin-top: 40px;
+        padding-top: 10px;
+        text-align: center;
+        color: #ffffff;
+        font-size: 12px;
+    }
+    
+    /* Стили для печати */
+    @media print {
+        @page {
+            margin: 2cm;
+        }
+        
+        body {
+            background: white !important;
+            padding: 0 !important;
+            font-size: 12pt;
+            line-height: 1.4;
+        }
+        
+        .print-controls {
+            display: none !important;
+        }
+        
+        .report-document {
+            max-width: 100% !important;
+            padding: 0 !important;
+            box-shadow: none !important;
+            border-radius: 0 !important;
+        }
+        
+        .document-title {
+            font-size: 20pt;
+        }
+        
+        .document-subtitle {
+            font-size: 14pt;
+        }
+        
+        .summary-stats th,
+        .daily-orders th {
+            background: #f8f9fa !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        
+        .summary-info {
+            background: #f8f9fa !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        
+        a {
+            color: #000 !important;
+            text-decoration: none !important;
+        }
+        
+        .no-print {
+            display: none !important;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+{% include 'admin/headers.html' %}
+<!-- Панель управления печатью -->
+<div class="print-controls no-print">
+    <button class="btn-print" onclick="window.print()">
+        <i class="bi bi-printer"></i> Распечатать отчёт
+    </button>
+    <a href="{% url 'admin:orders' %}" class="btn-back">
+        <i class="bi bi-arrow-left"></i> Назад к заказам
+    </a>
+    <span style="margin-left: 20px; color: #666; font-size: 14px;">
+        <i class="bi bi-info-circle"></i> Отчёт оптимизирован для печати
+    </span>
+</div>
+
+<!-- Основной документ -->
+<div class="report-document">
+    <!-- Заголовок документа -->
+    <div class="document-header">
+        <h1 class="document-title">Отчёт по заказам</h1>
+        <p class="document-subtitle">Период: {{ month }}</p>
+        <div class="document-meta">
+            <table style="margin: 0 auto; border-collapse: collapse;">
+                <tr>
+                    <td style="padding: 2px 10px; text-align: right;">Дата формирования:</td>
+                    <td style="padding: 2px 10px;"><strong>{{ today|date:"d.m.Y" }}</strong></td>
+                </tr>
+                <tr>
+                    <td style="padding: 2px 10px; text-align: right;">Время:</td>
+                    <td style="padding: 2px 10px;"><strong>{{ today|time:"H:i" }}</strong></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- Основная статистика -->
+    <div class="summary-stats">
+        <table>
+            <thead>
+                <tr>
+                    <th colspan="2">Сводная статистика за период</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td width="60%">Всего заказов за период</td>
+                    <td width="40%" class="stat-value">{{ total_orders }} шт.</td>
+                </tr>
+                <tr>
+                    <td>Выполнено заказов</td>
+                    <td class="stat-value">{{ completed_orders }} шт. ({% widthratio completed_orders total_orders 100 %}%)</td>
+                </tr>
+                <tr>
+                    <td>Общая выручка</td>
+                    <td class="stat-value">{{ total_revenue|floatformat:2 }} ₽</td>
+                </tr>
+                <tr>
+                    <td>Средняя выручка в день</td>
+                    <td class="stat-value">{{ daily_avg|default:"0.00"|floatformat:2 }} ₽</td>
+                </tr>
+                <tr>
+                    <td>Средний чек</td>
+                    <td class="stat-value">{{ avg_check|floatformat:2 }} ₽</td>
+                </tr>
+                <tr>
+                    <td>Самое популярное время заказов</td>
+                    <td class="stat-value">{{ peak_hour|default:"Не определено" }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Статистика по дням (если есть данные) -->
+    {% if daily_stats %}
+    <div class="daily-orders">
+        <table>
+            <thead>
+                <tr>
+                    <th>Дата</th>
+                    <th class="text-right">Заказов</th>
+                    <th class="text-right">Выполнено</th>
+                    <th class="text-right">Выручка</th>
+                    <th class="text-right">Средний чек</th>
+                    <th class="text-center">Эффективность</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for day in daily_stats %}
+                <tr>
+                    <td>{{ day.date|date:"d.m.Y" }} ({{ day.date|date:"D" }})</td>
+                    <td class="text-right">{{ day.total_orders }}</td>
+                    <td class="text-right">{{ day.completed_orders }}</td>
+                    <td class="text-right">{{ day.revenue|floatformat:2 }} ₽</td>
+                    <td class="text-right">{{ day.avg_check|floatformat:2 }} ₽</td>
+                    <td class="text-center">
+                        {% widthratio day.completed_orders day.total_orders 100 %}%
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr style="background: #f8f9fa; font-weight: 600;">
+                    <td>Итого:</td>
+                    <td class="text-right">{{ total_orders }}</td>
+                    <td class="text-right">{{ completed_orders }}</td>
+                    <td class="text-right">{{ total_revenue|floatformat:2 }} ₽</td>
+                    <td class="text-right">{{ avg_check|floatformat:2 }} ₽</td>
+                    <td class="text-center">{% widthratio completed_orders total_orders 100 %}%</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+    {% endif %}
+
+    <!-- Дополнительная информация -->
+    <div class="summary-info">
+        <h3>Дополнительная информация</h3>
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="info-label">Способ получения заказов:</div>
+                <div class="info-value">
+                    • Доставка: {{ delivery_count|default:"0" }} ({% widthratio delivery_count total_orders 100 %}%)<br>
+                    • Самовывоз: {{ pickup_count|default:"0" }} ({% widthratio pickup_count total_orders 100 %}%)
+                </div>
+            </div>
+            
+            <div class="info-item">
+                <div class="info-label">Время выполнения заказов:</div>
+                <div class="info-value">
+                    • Среднее время: {{ avg_completion_time|default:"0" }} мин.<br>
+                    • Быстрее всего: {{ min_completion_time|default:"0" }} мин.<br>
+                    • Дольше всего: {{ max_completion_time|default:"0" }} мин.
+                </div>
+            </div>
+            
+            <div class="info-item">
+                <div class="info-label">Распределение по сумме:</div>
+                <div class="info-value">
+                    • До 500 ₽: {{ small_orders|default:"0" }} зак.<br>
+                    • 500-1000 ₽: {{ medium_orders|default:"0" }} зак.<br>
+                    • Свыше 1000 ₽: {{ large_orders|default:"0" }} зак.
+                </div>
+            </div>
+            
+            <div class="info-item">
+                <div class="info-label">Статистика отмен:</div>
+                <div class="info-value">
+                    • Отменено заказов: {{ cancelled_orders|default:"0" }}<br>
+                    • Процент отмен: {% widthratio cancelled_orders total_orders 100 %}%
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Подпись -->
+    <div class="signature no-print">
+        <div class="signature-line">
+            Подпись ответственного лица
+        </div>
+        <p style="text-align: center; color: #666; font-size: 11px; margin-top: 20px;">
+            Отчёт сгенерирован автоматически. {{ today|date:"d.m.Y H:i" }}
+        </p>
+    </div>
+</div>
+
+<script>
+// Автоматическая печать (опционально)
+if (window.location.search.includes('autoprint')) {
+    window.print();
+}
+
+// Сохранить как PDF (если нужна эта функция)
+function saveAsPDF() {
+    // Здесь можно добавить функционал сохранения как PDF
+    alert('Для сохранения как PDF используйте функцию печати и выберите "Сохранить как PDF"');
+}
+
+// Добавляем дату в заголовок при печати
+window.onbeforeprint = function() {
+    document.title = "Отчёт по заказам - {{ month }} - {{ today|date:'d.m.Y' }}";
+};
+
+window.onafterprint = function() {
+    document.title = "Отчёты";
+};
+</script>
+{% endblock %}
