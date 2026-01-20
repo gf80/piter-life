@@ -37,7 +37,7 @@ class Discounts(models.Model):
     # Изображение акции
     image = models.ImageField(
         'Изображение',
-        upload_to='discounts/',
+        upload_to='discounts/images',
         blank=True,
         null=True
     )

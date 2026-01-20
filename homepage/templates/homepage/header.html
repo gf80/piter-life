@@ -86,7 +86,7 @@
                                 </div>
                                 <div>
                                     <div style="color: #a2a2a2; font-size: 12px;">Основной телефон</div>
-                                    <a href="tel:+78121234567" style="color: #000000; font-weight: 600; font-size: 18px; text-decoration: none;">+7 (918) 758-99-91</a>
+                                    <a href="tel:+79187589991" style="color: #000000; font-weight: 600; font-size: 18px; text-decoration: none;">+7 (918) 758-99-91</a>
                                 </div>
                             </div>
                         </div>
@@ -117,8 +117,8 @@
     
 </style>
 
-<div class="ultra-simple-menu overflow-auto">
-    <div class="container">
+<div class="ultra-simple-menu">
+    <div class="container overflow-auto">
         {% for category in categories %}
             <a href="{% url 'goods:category' category.slug %}" 
             class="simple-btn {% if active_category == category.slug %}active{% endif %}">

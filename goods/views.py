@@ -3,6 +3,8 @@ import random
 from django.shortcuts import render, get_object_or_404
 from goods.models import Category, Goods
 
+from django.db.models import Count
+
 from django.http import JsonResponse
 
 from collections import defaultdict
@@ -13,11 +15,16 @@ from django.views.decorators.csrf import csrf_exempt
 
 def category(request, slug):
     """Товары по категории с группировкой по подкатегориям"""
-    categories = Category.objects.all()
+    categories = Category.objects.annotate(
+        goods_count=Count('goods')
+    ).filter(goods_count__gt=0)
+
     category = get_object_or_404(Category, slug=slug)
     
     # Сортируем подкатегории по полю order или name
-    subcategories = category.subcategories.all().order_by('name')  # или 'order' если есть такое поле
+    subcategories = category.subcategories.annotate(
+        goods_count=Count('goods')
+    ).filter(goods_count__gt=0).order_by('name')  # или 'order' если есть такое поле
     
     # Получаем все товары категории
     all_goods = Goods.objects.filter(category=category, is_available=True)

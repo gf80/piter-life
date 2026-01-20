@@ -17,7 +17,7 @@ class Category(models.Model):
     )
     image = models.ImageField(
         'Изображение товара',
-        upload_to='category/%Y/%m/%d/',
+        upload_to='category/images',
         null=True,
         blank=True
     )
@@ -151,7 +151,7 @@ class Goods(models.Model):
     # Изображение
     image = models.ImageField(
         'Изображение товара',
-        upload_to='goods/%Y/%m/%d/',
+        upload_to='goods/images',
         null=True,
         blank=True
     )
